@@ -16,7 +16,7 @@ class DataInteraction():
             if parse_channels:
                 stmt = postgres_insert(ParseChannelsTable).values(
                     [{"channel": ch} for ch in parse_channels]
-                ).on_conflict_do_update(index_elements=['channel'])
+                ).on_conflict_do_nothing(index_elements=['channel'])
                 await session.execute(stmt)
 
             parse_objs = await session.scalars(
