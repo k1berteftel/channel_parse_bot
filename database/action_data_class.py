@@ -16,7 +16,7 @@ class DataInteraction():
             if parse_channels:
                 stmt = postgres_insert(ParseChannelsTable).values(
                     [{"channel": ch} for ch in parse_channels]
-                ).on_conflict_do_nothing(index_elements=['channel'])
+                ).on_conflict_do_update(index_elements=['channel'])
                 await session.execute(stmt)
 
             parse_objs = await session.scalars(
@@ -28,11 +28,10 @@ class DataInteraction():
                 stmt = postgres_insert(SendChannelsTable).values([
                     {
                         "channel": ch,
-                        "min_hour": min_hour,
-                        "max_hour": max_hour
+                        "hour_range": range(min_hour, max_hour+1)
                     }
                     for ch in send_channels
-                ]).on_conflict_do_nothing(index_elements=['channel'])
+                ]).on_conflict_do_update(index_elements=['channel'])
                 await session.execute(stmt)
 
             for channel in send_channels:
@@ -40,10 +39,12 @@ class DataInteraction():
                     select(SendChannelsTable).where(SendChannelsTable.channel == channel)
                 )
                 if send_obj:
-                    send_obj.parse_channels = [
-                        parse_map[ch] for ch in parse_channels if ch in parse_map
-                    ]
-
+                    if not parse_channels:
+                        send_obj.parse_channels = [
+                            parse_map[ch] for ch in parse_channels if ch in parse_map
+                        ]
+                    else:
+                        send_obj.parse_channels.extend([parse_map[ch] for ch in parse_channels if ch in parse_map])
             await session.commit()
 
     async def get_channels(self):
@@ -60,6 +61,13 @@ class DataInteraction():
         async with self._sessions() as session:
             result = await session.scalar(select(SendChannelsTable).where(SendChannelsTable.id == id))
         return result
+
+    async def update_hour_range(self, id: int, hour_range: list[int]):
+        async with self._sessions() as session:
+            await session.execute(update(SendChannelsTable).where(SendChannelsTable.id == id).values(
+                hour_range=hour_range
+            ))
+            await session.commit()
 
     async def del_channels(self, channels: list):
         async with self._sessions() as session:
