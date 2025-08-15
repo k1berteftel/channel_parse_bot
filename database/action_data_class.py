@@ -31,7 +31,9 @@ class DataInteraction():
                         "hour_range": range(min_hour, max_hour+1)
                     }
                     for ch in send_channels
-                ]).on_conflict_do_update(index_elements=['channel'])
+                ]).on_conflict_do_nothing(
+                    index_elements=['channel']
+                )
                 await session.execute(stmt)
 
             for channel in send_channels:
