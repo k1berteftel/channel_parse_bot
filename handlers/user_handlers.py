@@ -27,7 +27,8 @@ async def send_channel_post(msg: Message, session: DataInteraction, scheduler: A
     for channel in channels:
         parse_channels: list[ParseChannelsTable] = list(channel.parse_channels)
         channels_ids = [parse_channel.channel for parse_channel in parse_channels]
-        if '@' + msg.chat.username in channels_ids:
+        print(channels_ids)
+        if msg.chat.username and '@' + msg.chat.username in channels_ids:
             job_id = get_random_id()
             try:
                 chat = await msg.bot.get_chat(channel.channel)
@@ -35,8 +36,12 @@ async def send_channel_post(msg: Message, session: DataInteraction, scheduler: A
             except Exception:
                 continue
             hour = random.choice(channel.hour_range)
+            print(hour)
             new_hour = list(channel.hour_range)
             new_hour.remove(hour)
+            if not new_hour:
+                new_hour = range(channel.min_hour, channel.max_hour + 1)
+            print(new_hour)
             scheduler.add_job(
                 copy_post,
                 'interval',

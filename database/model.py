@@ -23,6 +23,8 @@ class SendChannelsTable(Base):
 
     channel: Mapped[str] = mapped_column(VARCHAR, unique=True)
     hour_range: Mapped[List[int]] = mapped_column(ARRAY(Integer))
+    min_hour: Mapped[int] = mapped_column(Integer)
+    max_hour: Mapped[int] = mapped_column(Integer)
     parse_channels = relationship("ParseChannelsTable", secondary=association_table, lazy="selectin", uselist=True)
 
 

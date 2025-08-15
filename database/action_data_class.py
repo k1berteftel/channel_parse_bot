@@ -28,7 +28,9 @@ class DataInteraction():
                 stmt = postgres_insert(SendChannelsTable).values([
                     {
                         "channel": ch,
-                        "hour_range": range(min_hour, max_hour+1)
+                        "hour_range": range(min_hour, max_hour+1),
+                        "min_hour": min_hour,
+                        "max_hour": max_hour
                     }
                     for ch in send_channels
                 ]).on_conflict_do_nothing(
