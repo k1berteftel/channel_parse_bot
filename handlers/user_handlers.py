@@ -36,6 +36,7 @@ async def send_channel_post(msg: Message, session: DataInteraction, scheduler: A
             except Exception:
                 continue
             hour = random.choice(channel.hour_range)
+            minutes = random.randint(0, 60)
             print(hour)
             new_hour = list(channel.hour_range)
             new_hour.remove(hour)
@@ -47,7 +48,8 @@ async def send_channel_post(msg: Message, session: DataInteraction, scheduler: A
                 'interval',
                 args=[msg.bot, msg.message_id, msg.chat.id, chat_id, job_id, scheduler],
                 id=job_id,
-                hours=hour
+                hours=hour,
+                minutes=minutes
             )
             await session.update_hour_range(channel.id, new_hour)
 
