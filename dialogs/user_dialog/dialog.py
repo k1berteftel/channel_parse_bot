@@ -87,6 +87,7 @@ user_dialog = Dialog(
             id='get_hour_range',
             on_success=getters.get_hour_range
         ),
+        Button(Const('Перессылать без задержки'), id='no_hour_range', on_click=getters.select_no_range),
         SwitchTo(Const('Назад'), id='back_get_send_channels', state=startSG.get_send_channels),
         state=startSG.get_hour_range
     ),

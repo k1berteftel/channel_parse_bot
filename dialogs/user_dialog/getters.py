@@ -148,6 +148,12 @@ async def get_hour_range(msg: Message, widget: ManagedTextInput, dialog_manager:
     await dialog_manager.switch_to(startSG.confirm_add_channel)
 
 
+async def select_no_range(clb: CallbackQuery, widget: Button, dialog_manager: DialogManager):
+    dialog_manager.dialog_data['min_hour'] = 0
+    dialog_manager.dialog_data['max_hour'] = 0
+    await dialog_manager.switch_to(startSG.confirm_add_channel)
+
+
 async def confirm_add_channels_getter(dialog_manager: DialogManager, **kwargs):
     parse_channels = dialog_manager.dialog_data.get('parse_channels')
     send_channels = dialog_manager.dialog_data.get('send_channels')

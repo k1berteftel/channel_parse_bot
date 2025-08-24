@@ -35,23 +35,26 @@ async def send_channel_post(msg: Message, session: DataInteraction, scheduler: A
                 chat_id = chat.id
             except Exception:
                 continue
-            hour = random.choice(channel.hour_range)
-            minutes = random.randint(0, 60)
-            print(hour)
-            new_hour = list(channel.hour_range)
-            new_hour.remove(hour)
-            if not new_hour:
-                new_hour = range(channel.min_hour, channel.max_hour + 1)
-            print(new_hour)
-            scheduler.add_job(
-                copy_post,
-                'interval',
-                args=[msg.bot, msg.message_id, msg.chat.id, chat_id, job_id, scheduler],
-                id=job_id,
-                hours=hour,
-                minutes=minutes
-            )
-            await session.update_hour_range(channel.id, new_hour)
+            if channel.min_hour and channel.max_hour:
+                hour = random.choice(channel.hour_range)
+                minutes = random.randint(0, 60)
+                print(hour)
+                new_hour = list(channel.hour_range)
+                new_hour.remove(hour)
+                if not new_hour:
+                    new_hour = range(channel.min_hour, channel.max_hour + 1)
+                print(new_hour)
+                scheduler.add_job(
+                    copy_post,
+                    'interval',
+                    args=[msg.bot, msg.message_id, msg.chat.id, chat_id, job_id, scheduler],
+                    id=job_id,
+                    hours=hour,
+                    minutes=minutes
+                )
+                await session.update_hour_range(channel.id, new_hour)
+            else:
+                await copy_post(msg.bot, msg.message_id, msg.chat.id, chat_id, job_id, scheduler)
 
 
 
