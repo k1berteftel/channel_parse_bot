@@ -20,7 +20,7 @@ async def watch_channels_getter(dialog_manager: DialogManager, **kwargs):
     for channel in channels:
         parse_channels: list[ParseChannelsTable] = list(channel.parse_channels)
         parse_text = ', '.join([parse_channel.channel for parse_channel in parse_channels])
-        text += f'{channel.channel} ◀️ {parse_text}'
+        text += f'{channel.channel} ◀️ {parse_text}\n'
     return {'text': text}
 
 
