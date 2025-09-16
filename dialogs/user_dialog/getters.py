@@ -174,6 +174,17 @@ async def confirm_add_channels_getter(dialog_manager: DialogManager, **kwargs):
     }
 
 
+async def interval_save_channels(clb: CallbackQuery, widget: Button, dialog_manager: DialogManager):
+    session: DataInteraction = dialog_manager.middleware_data.get('session')
+    parse_channels = dialog_manager.dialog_data.get('parse_channels')
+    send_channels = dialog_manager.dialog_data.get('send_channels')
+    min_hour = dialog_manager.dialog_data.get('min_hour')
+    max_hour = dialog_manager.dialog_data.get('max_hour')
+    await session.add_channels(send_channels, parse_channels, min_hour, max_hour, True)
+    await clb.message.answer('Каналы были успешно добавлены')
+    await dialog_manager.switch_to(startSG.start, show_mode=ShowMode.DELETE_AND_SEND)
+
+
 async def save_channels(clb: CallbackQuery, widget: Button, dialog_manager: DialogManager):
     session: DataInteraction = dialog_manager.middleware_data.get('session')
     parse_channels = dialog_manager.dialog_data.get('parse_channels')

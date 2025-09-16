@@ -11,7 +11,7 @@ class DataInteraction():
     def __init__(self, session: async_sessionmaker):
         self._sessions = session
 
-    async def add_channels(self, send_channels: list, parse_channels: list, min_hour: int, max_hour: int):
+    async def add_channels(self, send_channels: list, parse_channels: list, min_hour: int, max_hour: int, interval: bool = False):
         async with self._sessions() as session:
             if parse_channels:
                 stmt = postgres_insert(ParseChannelsTable).values(
@@ -30,7 +30,8 @@ class DataInteraction():
                         "channel": ch,
                         "hour_range": range(min_hour, max_hour+1) if min_hour and max_hour else [],
                         "min_hour": min_hour,
-                        "max_hour": max_hour
+                        "max_hour": max_hour,
+                        'interval': interval
                     }
                     for ch in send_channels
                 ]).on_conflict_do_nothing(

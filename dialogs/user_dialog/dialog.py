@@ -95,6 +95,8 @@ user_dialog = Dialog(
         Format('<b>Посты будут перессылаться из канала(ов)</b>: {parse_channels}\n'
                '<b>В канал:</b>{send_channels}\n С временным разбросом {hour_range} часов'),
         Column(
+            Button(Const('Подтвердить (С интервалами)'), id='interval_save_channels',
+                   on_click=getters.interval_save_channels),
             Button(Const('Подтвердить'), id='save_channels', on_click=getters.save_channels),
             Button(Const('Отменить'), id='cancel_save', on_click=getters.cancel_save),
         ),

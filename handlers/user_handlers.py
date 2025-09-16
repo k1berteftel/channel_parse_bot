@@ -35,6 +35,10 @@ async def send_channel_post(msg: Message, session: DataInteraction, scheduler: A
                 chat_id = chat.id
             except Exception:
                 continue
+            if channel.interval:
+                date = msg.date
+                if date.hour in range(7, 21) and date.minute in [59, *range(0, 11)]:
+                    return
             if channel.min_hour and channel.max_hour:
                 hour = random.choice(channel.hour_range)
                 minutes = random.randint(0, 60)
