@@ -29,6 +29,7 @@ async def send_channel_post(msg: Message, session: DataInteraction, scheduler: A
         channels_ids = [parse_channel.channel for parse_channel in parse_channels]
         print(channels_ids)
         if msg.chat.username and '@' + msg.chat.username in channels_ids:
+            print('success pass')
             job_id = get_random_id()
             try:
                 chat = await msg.bot.get_chat(channel.channel)
@@ -37,7 +38,9 @@ async def send_channel_post(msg: Message, session: DataInteraction, scheduler: A
                 continue
             if channel.interval:
                 date = msg.date
-                if date.hour in range(7, 21) and date.minute in [59, *range(0, 11)]:
+                with open('posts.log', 'a', encoding='utf-8') as f:
+                    f.write(f'Post: {msg.get_url()} ({date})')
+                if date.hour in [*range(7, 15), *range(17, 21)] and date.minute in [59, *range(0, 11)]:
                     return
             if channel.min_hour and channel.max_hour:
                 hour = random.choice(channel.hour_range)

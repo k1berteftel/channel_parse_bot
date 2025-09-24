@@ -19,8 +19,8 @@ async def watch_channels_getter(dialog_manager: DialogManager, **kwargs):
     text = '<b>Список каналов:</b>\n'
     for channel in channels:
         parse_channels: list[ParseChannelsTable] = list(channel.parse_channels)
-        parse_text = ', '.join([parse_channel.channel for parse_channel in parse_channels])
-        text += f'{channel.channel} ◀️ {parse_text}\n'
+        parse_text = '| '.join([parse_channel.channel for parse_channel in parse_channels])
+        text += f' - {channel.channel} ◀️ {parse_text}\n\n'
     return {'text': text}
 
 
@@ -45,8 +45,11 @@ async def del_parse_channels_getter(dialog_manager: DialogManager, **kwargs):
 
 
 async def del_parse_channel_selector(clb: CallbackQuery, widget: Select, dialog_manager: DialogManager, item_id: str):
-    parse_channels_del = dialog_manager.dialog_data.get('parse_channels_del')
-    parse_channels_del.append(int(item_id))
+    parse_channels_del: list = dialog_manager.dialog_data.get('parse_channels_del')
+    if int(item_id) in parse_channels_del:
+        parse_channels_del.remove(int(item_id))
+    else:
+        parse_channels_del.append(int(item_id))
     dialog_manager.dialog_data['parse_channels_del'] = parse_channels_del
     await dialog_manager.switch_to(startSG.del_parse_channels)
 
@@ -81,7 +84,10 @@ async def del_send_channels_getter(dialog_manager: DialogManager, **kwargs):
 
 async def del_send_channel_selector(clb: CallbackQuery, widget: Select, dialog_manager: DialogManager, item_id: str):
     send_channels_del = dialog_manager.dialog_data.get('send_channels_del')
-    send_channels_del.append(int(item_id))
+    if int(item_id) in send_channels_del:
+        send_channels_del.remove(int(item_id))
+    else:
+        send_channels_del.append(int(item_id))
     dialog_manager.dialog_data['send_channels_del'] = send_channels_del
     await dialog_manager.switch_to(startSG.del_send_channels)
 
