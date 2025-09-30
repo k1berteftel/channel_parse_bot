@@ -40,7 +40,7 @@ async def send_channel_post(msg: Message, session: DataInteraction, scheduler: A
                 date = msg.date
                 with open('posts.log', 'a', encoding='utf-8') as f:
                     f.write(f'Post: {msg.get_url()} ({date})')
-                if date.hour in [*range(7, 15), *range(17, 21)] and date.minute in [59, *range(0, 11)]:
+                if date.hour in [*range(7, 13), 14, 15, *range(17, 21)] and date.minute in [59, *range(0, 11)]:
                     return
             if channel.min_hour and channel.max_hour:
                 hour = random.choice(channel.hour_range)
