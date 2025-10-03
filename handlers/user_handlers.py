@@ -1,4 +1,5 @@
 import random
+from pytz import timezone
 
 from aiogram import Router, F, Bot
 from aiogram.filters import CommandStart
@@ -14,6 +15,16 @@ from states.state_groups import startSG
 
 
 user_router = Router()
+
+
+def is_in_time_range(h, m, ranges):
+    for start_h, start_m, end_h, end_m in ranges:
+        start_total = start_h * 60 + start_m
+        end_total = end_h * 60 + end_m
+        current_total = h * 60 + m
+        if start_total <= current_total <= end_total:
+            return True
+    return False
 
 
 @user_router.message(CommandStart())
@@ -40,7 +51,21 @@ async def send_channel_post(msg: Message, session: DataInteraction, scheduler: A
                 date = msg.date
                 with open('posts.log', 'a', encoding='utf-8') as f:
                     f.write(f'Post: {msg.get_url()} ({date})')
-                if date.hour in [*range(7, 13), 14, 15, *range(17, 21)] and date.minute in [59, *range(0, 11)]:
+
+                moscow_tz = timezone('Europe/Moscow')
+                moscow_time = date.astimezone(moscow_tz)
+                hour = moscow_time.hour
+                minute = moscow_time.minute
+                time_ranges = [
+                    (7, 59, 8, 10),  # 7:59-8:10
+                    (9, 59, 10, 0),  # 9:59-10:00
+                    (11, 59, 12, 10),  # 11:59-12:10
+                    (14, 59, 15, 10),  # 14:59-15:10
+                    (17, 59, 18, 10),  # 17:59-18:10
+                    (19, 59, 20, 10)  # 19:59-20:10
+                ]
+
+                if is_in_time_range(hour, minute, time_ranges):
                     return
             if channel.min_hour and channel.max_hour:
                 hour = random.choice(channel.hour_range)
@@ -62,7 +87,5 @@ async def send_channel_post(msg: Message, session: DataInteraction, scheduler: A
                 await session.update_hour_range(channel.id, new_hour)
             else:
                 await copy_post(msg.bot, msg.message_id, msg.chat.id, chat_id, job_id, scheduler)
-
-
 
 
