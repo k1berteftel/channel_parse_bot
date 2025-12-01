@@ -16,11 +16,22 @@ config: Config = load_config()
 async def watch_channels_getter(dialog_manager: DialogManager, **kwargs):
     session: DataInteraction = dialog_manager.middleware_data.get('session')
     channels = await session.get_channels()
-    text = '<b>Список каналов:</b>\n'
+
+    # Создаем словарь для группировки
+    parse_to_send = {}
+
     for channel in channels:
-        parse_channels: list[ParseChannelsTable] = list(channel.parse_channels)
-        parse_text = '| '.join([parse_channel.channel for parse_channel in parse_channels])
-        text += f' - {channel.channel} ◀️ {parse_text}\n\n'
+        for parse_channel in channel.parse_channels:
+            if parse_channel.channel not in parse_to_send:
+                parse_to_send[parse_channel.channel] = []
+            parse_to_send[parse_channel.channel].append(channel.channel)
+
+    # Формируем текст
+    text = '<b>Список каналов:</b>\n'
+    for parse_channel_name, send_channels in sorted(parse_to_send.items()):
+        send_text = ', '.join(sorted(send_channels))
+        text += f' - {parse_channel_name} ➡️ {send_text}\n\n'
+
     return {'text': text}
 
 
