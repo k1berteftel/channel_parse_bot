@@ -81,22 +81,22 @@ user_dialog = Dialog(
         disable_web_page_preview=True,
         state=startSG.get_send_channels
     ),
-    Window(
-        Const('Введите количество часов для рандома перессылки (н-р: 1-23)'),
-        TextInput(
-            id='get_hour_range',
-            on_success=getters.get_hour_range
-        ),
-        Button(Const('Перессылать без задержки'), id='no_hour_range', on_click=getters.select_no_range),
-        SwitchTo(Const('Назад'), id='back_get_send_channels', state=startSG.get_send_channels),
-        state=startSG.get_hour_range
-    ),
+    # Window(
+    #     Const('Введите количество часов для рандома перессылки (н-р: 1-23)'),
+    #     TextInput(
+    #         id='get_hour_range',
+    #         on_success=getters.get_hour_range
+    #     ),
+    #     Button(Const('Перессылать без задержки'), id='no_hour_range', on_click=getters.select_no_range),
+    #     SwitchTo(Const('Назад'), id='back_get_send_channels', state=startSG.get_send_channels),
+    #     state=startSG.get_hour_range
+    # ),
     Window(
         Format('<b>Посты будут перессылаться из канала(ов)</b>: {parse_channels}\n'
-               '<b>В канал:</b>{send_channels}\n С временным разбросом {hour_range} часов'),
+               '<b>В канал:</b>{send_channels}'),  # \n С временным разбросом {hour_range} часов
         Column(
-            Button(Const('Подтвердить (С интервалами)'), id='interval_save_channels',
-                   on_click=getters.interval_save_channels),
+            # Button(Const('Подтвердить (С интервалами)'), id='interval_save_channels',
+            #        on_click=getters.interval_save_channels),
             Button(Const('Подтвердить'), id='save_channels', on_click=getters.save_channels),
             Button(Const('Отменить'), id='cancel_save', on_click=getters.cancel_save),
         ),

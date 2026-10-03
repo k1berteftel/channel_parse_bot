@@ -150,32 +150,32 @@ async def get_send_channels(msg: Message, widget: ManagedTextInput, dialog_manag
         await msg.answer('Ни один канал не удалось распознать, пожалуйста попробуйте снова')
         return
     dialog_manager.dialog_data['send_channels'] = send_channels
-    await dialog_manager.switch_to(startSG.get_hour_range)
-
-
-async def get_hour_range(msg: Message, widget: ManagedTextInput, dialog_manager: DialogManager, text: str):
-    try:
-        hours = text.strip().split('-')
-        min_hour, max_hour = int(hours[0].strip()), int(hours[1].strip())
-    except Exception:
-        await msg.answer('Вы ввели данные не том формате, пожалуйста попробуйте снова')
-        return
-    dialog_manager.dialog_data['min_hour'] = min_hour
-    dialog_manager.dialog_data['max_hour'] = max_hour
     await dialog_manager.switch_to(startSG.confirm_add_channel)
 
 
-async def select_no_range(clb: CallbackQuery, widget: Button, dialog_manager: DialogManager):
-    dialog_manager.dialog_data['min_hour'] = 0
-    dialog_manager.dialog_data['max_hour'] = 0
-    await dialog_manager.switch_to(startSG.confirm_add_channel)
+# async def get_hour_range(msg: Message, widget: ManagedTextInput, dialog_manager: DialogManager, text: str):
+#     try:
+#         hours = text.strip().split('-')
+#         min_hour, max_hour = int(hours[0].strip()), int(hours[1].strip())
+#     except Exception:
+#         await msg.answer('Вы ввели данные не том формате, пожалуйста попробуйте снова')
+#         return
+#     dialog_manager.dialog_data['min_hour'] = min_hour
+#     dialog_manager.dialog_data['max_hour'] = max_hour
+#     await dialog_manager.switch_to(startSG.confirm_add_channel)
+#
+#
+# async def select_no_range(clb: CallbackQuery, widget: Button, dialog_manager: DialogManager):
+#     dialog_manager.dialog_data['min_hour'] = 0
+#     dialog_manager.dialog_data['max_hour'] = 0
+#     await dialog_manager.switch_to(startSG.confirm_add_channel)
 
 
 async def confirm_add_channels_getter(dialog_manager: DialogManager, **kwargs):
     parse_channels = dialog_manager.dialog_data.get('parse_channels')
     send_channels = dialog_manager.dialog_data.get('send_channels')
-    min_hour = dialog_manager.dialog_data.get('min_hour')
-    max_hour = dialog_manager.dialog_data.get('max_hour')
+    min_hour = dialog_manager.dialog_data.get('min_hour', 0)
+    max_hour = dialog_manager.dialog_data.get('max_hour', 0)
 
     parse_channels_text = ''
     for channel in parse_channels:
@@ -183,31 +183,31 @@ async def confirm_add_channels_getter(dialog_manager: DialogManager, **kwargs):
     send_channels_text = ''
     for channel in send_channels:
         send_channels_text += f'\n{channel}'
-    hours_text = f'{min_hour} - {max_hour}'
+    # hours_text = f'{min_hour} - {max_hour}'
     return {
         'parse_channels': parse_channels_text,
         'send_channels': send_channels_text,
-        'hour_range': hours_text
+        # 'hour_range': hours_text
     }
 
 
-async def interval_save_channels(clb: CallbackQuery, widget: Button, dialog_manager: DialogManager):
-    session: DataInteraction = dialog_manager.middleware_data.get('session')
-    parse_channels = dialog_manager.dialog_data.get('parse_channels')
-    send_channels = dialog_manager.dialog_data.get('send_channels')
-    min_hour = dialog_manager.dialog_data.get('min_hour')
-    max_hour = dialog_manager.dialog_data.get('max_hour')
-    await session.add_channels(send_channels, parse_channels, min_hour, max_hour, True)
-    await clb.message.answer('Каналы были успешно добавлены')
-    await dialog_manager.switch_to(startSG.start, show_mode=ShowMode.DELETE_AND_SEND)
+# async def interval_save_channels(clb: CallbackQuery, widget: Button, dialog_manager: DialogManager):
+#     session: DataInteraction = dialog_manager.middleware_data.get('session')
+#     parse_channels = dialog_manager.dialog_data.get('parse_channels')
+#     send_channels = dialog_manager.dialog_data.get('send_channels')
+#     min_hour = dialog_manager.dialog_data.get('min_hour')
+#     max_hour = dialog_manager.dialog_data.get('max_hour')
+#     await session.add_channels(send_channels, parse_channels, min_hour, max_hour, True)
+#     await clb.message.answer('Каналы были успешно добавлены')
+#     await dialog_manager.switch_to(startSG.start, show_mode=ShowMode.DELETE_AND_SEND)
 
 
 async def save_channels(clb: CallbackQuery, widget: Button, dialog_manager: DialogManager):
     session: DataInteraction = dialog_manager.middleware_data.get('session')
     parse_channels = dialog_manager.dialog_data.get('parse_channels')
     send_channels = dialog_manager.dialog_data.get('send_channels')
-    min_hour = dialog_manager.dialog_data.get('min_hour')
-    max_hour = dialog_manager.dialog_data.get('max_hour')
+    min_hour = dialog_manager.dialog_data.get('min_hour', 0)
+    max_hour = dialog_manager.dialog_data.get('max_hour', 0)
     await session.add_channels(send_channels, parse_channels, min_hour, max_hour)
     await clb.message.answer('Каналы были успешно добавлены')
     await dialog_manager.switch_to(startSG.start, show_mode=ShowMode.DELETE_AND_SEND)
